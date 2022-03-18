@@ -1,7 +1,7 @@
 #if !defined(SIMPLE_QUEUE_H)
 #define SIMPLE_QUEUE_H
 
-#define Q_ERR 7 // A queue is overflow
+#define Q_ERR 7 ///< A queue is overflow
 #define Q_SIZE 64U
 
 #include <inttypes.h>
@@ -22,8 +22,11 @@ public:
     mCapacity = capacity;
     rear = capacity - 1;
     array = new T *[capacity];
+
+#if defined(_Q_DEBUG_)
     Serial.println(F("Queue constructor ok"));
     stats();
+#endif // _Q_DEBUG_
   }
 
   ~SQueue() { delete[] array; }
@@ -34,16 +37,25 @@ public:
 
   inline uint32_t size() { return _mSize; }
 
-  void clean() {
+  bool clean() {
     if (!isEmpty()) {
+
+#if defined(_Q_DEBUG_)
       Serial.println(F("The queue is not empty"));
-      return;
+#endif // _Q_DEBUG_
+
+      return false;
     }
 
     front = 0;
     _mSize = 0;
     rear = mCapacity - 1;
+
+#if defined(_Q_DEBUG_)
     stats();
+#endif // _Q_DEBUG_
+
+    return true;
   }
 
   bool enqueue(T *item) {
@@ -88,6 +100,7 @@ public:
     return tItem;
   }
 
+#if defined(_Q_DEBUG_)
   void stats() {
     Serial.println(F("== Queue Stats =="));
 
@@ -104,6 +117,7 @@ public:
 
     Serial.println(F("==="));
   }
+#endif // _Q_DEBUG_
 };
 
 #endif // SIMPLE_QUEUE_H
